@@ -9,10 +9,10 @@ class Student:
 
     def rate_sl(self, lecturer, course, grade):
         if isinstance(lecturer, Lecturer) and course in lecturer.courses_attached and course in self.courses_in_progress:
-            if course in lecturer.grades:
-                lecturer.grades[course] += [grade]
+            if course in lecturer.grades1:
+                lecturer.grades1[course] += [grade]
             else:
-                lecturer.grades[course] = [grade]
+                lecturer.grades1[course] = [grade]
         else:
             return 'Ошибка'
 
@@ -27,13 +27,8 @@ class Student:
         return self._average_grade() < other._average_grade()
 
     def __str__(self):
-        res = f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за домашние задания: {self._average_grade()}\n\
-            Курсы в процессе изучения: {self.courses_in_progress}\nЗавершенные курсы: {self.finished_courses}'
+        res = f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за домашние задания: {self._average_grade()}\nКурсы в процессе изучения: {self.courses_in_progress}\nЗавершенные курсы: {self.finished_courses}'
         return res
-
-
-    # def add_courses(self, course_name):
-    #     self.finished_courses.append(course_name)
 
 class Mentor:
     def __init__(self, name, surname):
@@ -53,10 +48,10 @@ class Mentor:
 class Lecturer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
-        self.grades = {}
+        self.grades1 = {}
 
     def _average_rating(self):
-        self.average = round(sum(sum(self.grades.values(), [])) / len(sum(self.grades.values(), [])), 1)
+        self.average = round(sum(sum(self.grades1.values(), [])) / len(sum(self.grades1.values(), [])), 1)
         return self.average
 
     def __lt__(self, other):
@@ -71,7 +66,7 @@ class Lecturer(Mentor):
 
 class Reviewer(Mentor):
     def rate_hw(self, student, course, grade):
-        super().rate_hw(self, student, course, grade)
+        super().rate_hw(student, course, grade)
 
     def __str__(self):
         res = f'Имя: {self.name}\nФамилия: {self.surname}'
@@ -82,11 +77,9 @@ class Reviewer(Mentor):
 some_student = Student('Ruoy', 'Eman', 'your_gender')
 steep_student = Student('Vova', 'Кашин', 'оно')
 some_student.courses_in_progress += ['Python']
-some_student.courses_in_progress += ['Git']
 some_student.finished_courses += ['Введение в программирование']
 steep_student.courses_in_progress += ['Python']
 steep_student.finished_courses += ['Введение в программирование', 'Git']
-# cool_mentor.rate_hw(best_student, 'Python', 10)
 
 some_lecturer = Lecturer('Some', 'Buddy')
 steep_lecturer = Lecturer('Steep', 'Alex')
@@ -95,6 +88,8 @@ steep_lecturer.courses_attached += ['Python', 'Git']
 
 some_reviewer = Reviewer('Some', 'Buddy')
 steep_reviewer = Reviewer('Steep', 'Alex')
+some_reviewer.courses_attached += ['Python']
+steep_reviewer.courses_attached += ['Python', 'Git']
 
 some_student.rate_sl(some_lecturer, 'Python', 9)
 steep_student.rate_sl(some_lecturer, 'Python', 7)
@@ -122,3 +117,26 @@ print(steep_lecturer)
 
 print(some_reviewer)
 print(steep_reviewer)
+
+students_list = [some_student, steep_student]
+def grade_av(students_list, course):
+    sum = 0
+    count = 0
+    for x in students_list:
+        for y in x.grades[course]:
+            sum += y
+            count += 1
+    return round(sum/count, 1)
+
+lecturers_list = [some_lecturer, steep_lecturer]
+def rating_al(lecturers_list, course):
+    sum = 0
+    count = 0
+    for x in lecturers_list:
+        for y in x.grades1[course]:
+            sum += y
+            count += 1
+    return round(sum/count, 1)
+
+print(grade_av(students_list, 'Python'))
+print(rating_al(lecturers_list, 'Python'))
